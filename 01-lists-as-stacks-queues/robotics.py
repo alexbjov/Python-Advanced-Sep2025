@@ -1,34 +1,37 @@
 from collections import deque
 
 robots_data = input().split(";")
-start_time = input().split(":")
-hours, minutes, seconds = map(int, start_time)
-total_time_sec = hours * 3600 + minutes * 60 + seconds
-added_time = 1
-product_time = total_time_sec + added_time
-
-robots = deque()
+robots = []
 for robot_params in robots_data:
 	robot_name, robot_time = robot_params.split("-")
 	robot_time_sec = int(robot_time)
-	on_time_to_start = product_time
-	robots.append([robot_name, robot_time_sec, on_time_to_start])
+	on_time_to_start = 0
+	robots.append({'name': robot_name,
+				   'duration': robot_time_sec,
+				   'busy until': on_time_to_start})
+
+time_str = input().split(":")
+hours, minutes, seconds = map(int, time_str)
+start_time_sec = hours * 3600 + minutes * 60 + seconds
 
 products = deque()
-product = input()
-# to be continued
-# while product != "End":
-# 	products.append(product)
-# 	current_robot = robots.popleft()
-# 	while product_time < current_robot[2]:
-# 		robots.append(current_robot)
-# 		current_robot = robots.popleft()
-# 	if product_time >= current_robot[2]:
-# 		print(f"{current_robot[0]} - {product} {product_time}")
-# 		current_robot[2] = product_time + current_robot[1]
-# 		robots.append(current_robot)
-# 		products.popleft()
-#
-#
-# 	product_time += added_time
-# 	product = input()
+prod = input()
+while prod != 'End':
+	products.append(prod)
+	prod = input()
+
+while products:
+	curr_product = products.popleft()
+	start_time_sec += 1
+
+	for robot in robots:
+		if robot['busy until'] <= start_time_sec:
+			robot['busy until'] = start_time_sec + robot['duration']
+			h = start_time_sec // 3600
+			m = (start_time_sec % 3600) // 60
+			s = (start_time_sec % 3600) % 60
+			h %= 24
+			print(f"{robot['name']} - {curr_product} [{h:02d}:{m:02d}:{s:02d}]")
+			break
+	else:
+		products.append(curr_product)
