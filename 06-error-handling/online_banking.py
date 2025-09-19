@@ -10,7 +10,7 @@ class UnderageTransactionError(Exception):
 class MoneyIsNegativeError(Exception):
 	pass
 
-
+LEGAL_AGE = 18
 user_data = input().split(', ')
 user_pin = user_data[0]
 user_balance = int(user_data[1])
@@ -30,7 +30,7 @@ while command != 'End':
 		if user_pin != pin:
 			raise PINCodeError("Invalid PIN code")
 
-		if user_age < 18:
+		if user_age < LEGAL_AGE:
 			raise UnderageTransactionError("You must be 18 years or older to perform online transactions")
 
 		user_balance -= money
