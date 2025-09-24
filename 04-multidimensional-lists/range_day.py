@@ -1,17 +1,16 @@
-from wsgiref.util import application_uri
-
+SIZE = 5
 matrix = []
-
-my_pos_x, my_pos_y = -1, -1
-for row in range(5):
+my_position = []
+targets = 0
+for row in range(SIZE):
 	row_data = input().split()
 	matrix.append(row_data)
-	# print(*row_data)
-	for col in range(5):
+	for col in range(SIZE):
 		if matrix[row][col] == "A":
-			my_pos_x, my_pos_y = row, col
+			my_position = [row, col]
+		elif matrix[row][col] == 'x':
+			targets += 1
 
-# print("My position:", my_pos_x, my_pos_y)
 my_moves = {
 	"up": (-1, 0),
 	"down": (1, 0),
@@ -19,65 +18,43 @@ my_moves = {
 	"right": (0, 1)
 }
 
-my_shots = {
-	"up": (-1, 0),
-	"down": (1, 0),
-	"left": (0, -1),
-	"right": (0, 1)
-}
+hit_targets = []
 
-targets = []
-targets_left_counter = 0
-
-num_of_cmds = int(input())
-for _ in range(num_of_cmds):
-	tokens = input().split()
-	action = tokens[0]
-	direction = tokens[1]
-
-	if action == 'move':
-		steps_to_move = int(tokens[2])
-		moves_coords = my_moves[direction]
-		new_pos_x = my_pos_x + moves_coords[0]
-		new_pos_y = my_pos_y + moves_coords[1]
-		matrix[my_pos_x][my_pos_y] = '.'
-		counter = 0
-		while 0 <= new_pos_x < 5 and 0 <= new_pos_y < 5 and counter < steps_to_move:
-			matrix[my_pos_x][my_pos_y] = '.'
-			if matrix[new_pos_x][new_pos_y] == 'x':
+num_of_commands = int(input())
+for _ in range(num_of_commands):
+	command = input().split()
+	action = command[0]
+	direction = command[1]
+	move = my_moves[direction]
+	if action == 'shoot':
+		next_row = my_position[0] + move[0]
+		next_col = my_position[1] + move[1]
+		
+		while 0 <= next_row < SIZE and 0 <= next_col < SIZE:
+			if matrix[next_row][next_col] == 'x':
+				hit_targets.append([next_row, next_col])
+				matrix[next_row][next_col] = '.'
 				break
-			my_pos_x = new_pos_x
-			my_pos_y = new_pos_y
-			new_pos_x = my_pos_x + moves_coords[0]
-			new_pos_y = my_pos_y + moves_coords[1]
-			counter += 1
+			
+			next_row += move[0]
+			next_col += move[1]
+		
+		if targets == len(hit_targets):
+			print(f"Training completed! All {targets} targets hit.")
+			break
+	
+	elif action == 'move':
+		steps = int(command[2])
+		next_row = my_position[0] + move[0] * steps
+		next_col = my_position[1] + move[1] * steps
+		
+		if (0 <= next_row < SIZE and 0 <= next_col < SIZE and
+				matrix[next_row][next_col] == '.'):
+			my_position = [next_row, next_col]
 
-	elif action == 'shoot':
-		matrix[my_pos_x][my_pos_y] = '.'
-		start_pos_x = my_pos_x
-		start_pos_y = my_pos_y
-		shot_coords = my_shots[direction]
-		next_pos_x = start_pos_x + shot_coords[0]
-		next_pos_y = start_pos_y + shot_coords[1]
-		while (0 <= next_pos_x < 5 and 0 <= next_pos_y < 5):
-			if matrix[next_pos_x][next_pos_y] == 'x':
-				targets.append([next_pos_x, next_pos_y])
-				matrix[next_pos_x][next_pos_y] = '.'
-				break
+if targets > len(hit_targets):
+	print(f"Training not completed! "
+		  f"{targets - len(hit_targets)} targets left.")
 
-			start_pos_x, start_pos_y = next_pos_x, next_pos_y
-			next_pos_x = start_pos_x + shot_coords[0]
-			next_pos_y = start_pos_y + shot_coords[1]
-
-for mat_row in matrix:
-	targets_left_counter += mat_row.count('x')
-	# print("Counter on each row:", targets_left_counter)
-
-if targets_left_counter == 0:
-	print(f"Training completed! All {len(targets)} targets hit.")
-else:
-	print(f"Training not completed! {targets_left_counter} targets left.")
-
-if targets:
-	for target_row in targets:
-		print(target_row)
+for coordinates in hit_targets:
+	print(coordinates)
