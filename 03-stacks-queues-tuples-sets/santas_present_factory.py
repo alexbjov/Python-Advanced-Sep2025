@@ -1,43 +1,55 @@
 from collections import deque
 
 materials = [int(x) for x in input().split()]
-magic = deque(map(int, input().split()))
+magic = deque(int(x) for x in input().split())
 
-points = {
+presents = {
 	150: "Doll",
 	250: "Wooden train",
 	300: "Teddy bear",
 	400: "Bicycle"
 }
 
-presents = {}
+crafted_toys = []
 
 while materials and magic:
-	total_magic = materials[-1] * magic[0]
-	if total_magic in points:
-		new_present = points[total_magic]
-		if new_present not in presents:
-			presents[new_present] = 0
-		presents[new_present] += 1
-		materials.pop()
-		magic.popleft()
-
-	elif total_magic < 0:
-		materials.append(materials.pop() + magic.popleft())
-
-	elif total_magic > 0:
-		magic.popleft()
-		materials[-1] += 15
-
-	else:
+	if materials[-1] == 0 or magic[0] == 0:
+		
 		if materials[-1] == 0:
 			materials.pop()
+		
 		if magic[0] == 0:
 			magic.popleft()
+		
+		continue
+	
+	last_material = materials.pop()
+	first_magic = magic.popleft()
+	
+	total_magic = last_material * first_magic
+	if total_magic in presents:
+		new_present = presents[total_magic]
+		crafted_toys.append(new_present)
+	
+	elif total_magic < 0:
+		materials.append(last_material + first_magic)
+	
+	elif total_magic > 0:
+		materials.append(last_material + 15)
 
-if (('Doll' in presents and "Wooden train" in presents) or
-		('Teddy bear' in presents and 'Bicycle' in presents)):
+if (({'Doll', "Wooden train"}.issubset(crafted_toys)) or
+		({'Teddy bear', 'Bicycle'}.issubset(crafted_toys))):
 	print('The presents are crafted! Merry Christmas!')
 else:
 	print("No presents this Christmas!")
 
+if materials:
+	print(f"Materials left: {', '.join([str(x) for x in materials[::-1]])}")
+
+if magic:
+	print(f"Magic left: {', '.join([str(x) for x in magic])}")
+
+unique_toys = sorted(list(set(crafted_toys)))
+
+for toy in unique_toys:
+	print(f"{toy}: {crafted_toys.count(toy)}")

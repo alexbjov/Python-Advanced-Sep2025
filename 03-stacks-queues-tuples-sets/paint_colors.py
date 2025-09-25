@@ -1,3 +1,5 @@
+from collections import deque
+
 main_colors = {"red", "yellow", "blue"}
 secondary_colors = {
 	"orange": {"red", "yellow"},
@@ -5,77 +7,64 @@ secondary_colors = {
 	"green": {"yellow", "blue"}
 }
 
-colors = []
-words_list = input().split()
+all_colors = []
+sec_colors = []
+start_list = deque(input().split())
 
-while True:
-	if not words_list:
-		break
-
-	word1 = words_list[0]
-	word2 = words_list[-1]
-	potential_color_1 = (word1 + word2).strip()
-	potential_color_2 = (word2 + word1).strip()
-	if len(words_list) == 1:
-		mid_point = len(colors) // 2
-		if potential_color_1 in main_colors:
-			colors.insert(mid_point, potential_color_1)
-		elif potential_color_2 in main_colors:
-			colors.insert(mid_point, potential_color_2)
-		elif potential_color_1 in secondary_colors:
-			clrs = secondary_colors[potential_color_1]
-			for clr in clrs:
-				if clr not in colors:
-					break
-			else:
-				colors.insert(mid_point, potential_color_1)
-
-		elif potential_color_2 in secondary_colors:
-			clrs = secondary_colors[potential_color_2]
-			for clr in clrs:
-				if clr not in colors:
-					break
-			else:
-				colors.insert(mid_point, potential_color_2)
-
-	if potential_color_1 in main_colors:
-		words_list = words_list[1:-1]
-		mid_point = len(colors) // 2
-		colors.insert(mid_point, potential_color_1)
-
-	elif potential_color_2 in main_colors:
-		words_list = words_list[1:-1]
-		mid_point = len(colors) // 2
-		colors.insert(mid_point, potential_color_2)
-
-	elif potential_color_1 in secondary_colors:
-		main_clrs = secondary_colors[potential_color_1]
-		for clr in main_clrs:
-			if clr not in colors:
-				words_list = words_list[1:-1]
-				mid_point = len(words_list) // 2
-				words_list.insert(mid_point, potential_color_1)
-				break
-		else:
-			words_list = words_list[1:-1]
-			mid_point = len(colors) // 2
-			colors.insert(mid_point, potential_color_1)
-
-	elif potential_color_2 in secondary_colors:
-		main_clrs = secondary_colors[potential_color_2]
-		for clr in main_clrs:
-			if clr not in colors:
-				words_list = words_list[1:-1]
-				mid_point = len(words_list) // 2
-				words_list.insert(mid_point, potential_color_2)
-				break
-		else:
-			words_list = words_list[1:-1]
-			mid_point = len(colors) // 2
-			colors.insert(mid_point, potential_color_2)
-
+while len(start_list) > 1:
+	
+	first_word = start_list.pop()
+	last_word = start_list.popleft()
+	
+	composed_word_1 = (first_word + last_word).strip()
+	composed_word_2 = (last_word + first_word).strip()
+	
+	if composed_word_1 in main_colors:
+		all_colors.append(composed_word_1)
+	
+	elif composed_word_1 in secondary_colors:
+		position_to_add = len(all_colors)
+		sec_colors.append((composed_word_1, position_to_add))
+	
+	elif composed_word_2 in main_colors:
+		all_colors.append(composed_word_2)
+	
+	elif composed_word_2 in secondary_colors:
+		position_to_add = len(all_colors)
+		sec_colors.append((composed_word_2, position_to_add))
+	
 	else:
-		words_list[0] = words_list[0][:-1]
-		words_list[-1] = words_list[-1][:-1]
+		mid_point = len(start_list) // 2
+		new_word_1 = (first_word[:-1] + last_word[:-1]).strip()
+		new_word_2 = (last_word[:-1] + first_word[:-1]).strip()
+		if new_word_1 in main_colors:
+			all_colors.append(new_word_1)
+		
+		elif new_word_1 in secondary_colors:
+			position_to_add = len(all_colors)
+			sec_colors.append((new_word_1, position_to_add))
+		
+		elif new_word_2 in main_colors:
+			all_colors.append(new_word_2)
+		
+		elif new_word_2 in secondary_colors:
+			position_to_add = len(all_colors)
+			sec_colors.append((new_word_2, position_to_add))
+		
+		else:
+			start_list.insert(mid_point, new_word_1)
 
-	print(colors)
+if start_list:
+	if start_list[0] in main_colors:
+		all_colors.append(start_list[0])
+
+for color, position in sec_colors:
+	possible_main_colors = secondary_colors[color]
+	for pos_main_clr in possible_main_colors:
+		if pos_main_clr not in all_colors:
+			break
+	
+	else:
+		all_colors.insert(position, color)
+
+print(all_colors)
