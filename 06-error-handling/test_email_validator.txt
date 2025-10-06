@@ -1,0 +1,12 @@
+# input 1
+abc@abv.bg
+End
+
+# input 2
+peter@gmail.com
+petergmail.com
+End
+
+# input 3
+peter@gmail.hotmail
+End

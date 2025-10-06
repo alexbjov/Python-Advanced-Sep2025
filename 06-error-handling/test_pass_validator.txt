@@ -1,0 +1,19 @@
+# input 1
+1234qwer@
+Done
+
+# input 2
+Qazxwj21
+Done
+
+# input 3
+Password
+Done
+
+# input 4
+zjL2k 1#@
+Done
+
+# input 5
+12345q#
+Done

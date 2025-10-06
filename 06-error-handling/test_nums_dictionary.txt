@@ -1,0 +1,26 @@
+# input 1
+one
+1
+two
+2
+Search
+one
+Remove
+two
+End
+
+# input 2
+one
+two
+Search
+Remove
+End
+
+# input 3
+one
+1
+Search
+one
+Remove
+two
+End
