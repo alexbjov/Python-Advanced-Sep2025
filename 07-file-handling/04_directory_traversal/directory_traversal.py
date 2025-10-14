@@ -5,9 +5,9 @@ directory = '..'
 
 
 def get_files(folder, level):
-	if level == -1:
+	if level < 0:
 		return
-
+	
 	for el in os.listdir(folder):
 		f = os.path.join(folder, el)
 		if os.path.isfile(f):
@@ -15,7 +15,7 @@ def get_files(folder, level):
 			if extension not in files:
 				files[extension] = []
 			files[extension].append(el)
-
+		
 		else:
 			get_files(f, level - 1)
 

@@ -12,7 +12,6 @@
 - - - input.txt
 - - - numbers.txt
 - - - output.txt
-- - - report.txt
 - - - text.txt
 - - - text.txt
 - - - text.txt
