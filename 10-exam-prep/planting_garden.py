@@ -1,35 +1,26 @@
-import math
-
-
 def plant_garden(garden_space: float, *allowed_plants_space,
 		**requested_plants_pieces) -> str:
 	sorted_requests = sorted(requested_plants_pieces.items(),
 		key=lambda x: x[0])
 	
 	plants_list = []
-	result = []
-	out_of_space = False
+	all_planted = True
 	
 	for plant, pieces in sorted_requests:
 		for allowed_plant, space in allowed_plants_space:
 			if plant == allowed_plant:
-				needed_plant_space = min(pieces * space, garden_space)
-				needed_pieces = math.floor(needed_plant_space / space)
-				if needed_pieces > 0:
-					plants_list.append((plant, needed_pieces))
-					garden_space -= needed_plant_space
+				planted = min(pieces, int(garden_space / space))
+				if planted < pieces:
+					all_planted = False
+				
+				if planted > 0:
+					plants_list.append((plant, planted))
+					garden_space -= planted * space
+				
 				break
-		
-		if garden_space <= 0.0:
-			out_of_space = True
-			break
 	
-	total_planted = sum(item[1] for item in plants_list)
-	total_requested = sum(item[1] for item in sorted_requests)
-	# print("Total planted:", total_planted)
-	# print("Total requested:", total_requested)
-	
-	if total_planted == total_requested or not out_of_space:
+	result = []
+	if all_planted:
 		result.append(
 			f"All plants were planted! Available garden space: {garden_space:.1f} sq meters.")
 	
