@@ -1,70 +1,41 @@
 from collections import deque
 
-main_colors = {"red", "yellow", "blue"}
-secondary_colors = {
-	"orange": {"red", "yellow"},
-	"purple": {"red", "blue"},
-	"green": {"yellow", "blue"}
-}
+main_colors = ["red", "yellow", "blue"]
+secondary_colors = {"orange": ["red", "yellow"], "purple": ["red", "blue"],
+					"green": ["yellow", "blue"]}
 
-all_colors = []
-sec_colors = []
-start_list = deque(input().split())
+collected_colors = []
+colors_queue = deque(input().split())
 
-while len(start_list) > 1:
+while colors_queue:
+	first_str = colors_queue.popleft()
+	last_str = colors_queue.pop() if colors_queue else ""
 	
-	first_word = start_list.pop()
-	last_word = start_list.popleft()
-	
-	composed_word_1 = (first_word + last_word).strip()
-	composed_word_2 = (last_word + first_word).strip()
-	
-	if composed_word_1 in main_colors:
-		all_colors.append(composed_word_1)
-	
-	elif composed_word_1 in secondary_colors:
-		position_to_add = len(all_colors)
-		sec_colors.append((composed_word_1, position_to_add))
-	
-	elif composed_word_2 in main_colors:
-		all_colors.append(composed_word_2)
-	
-	elif composed_word_2 in secondary_colors:
-		position_to_add = len(all_colors)
-		sec_colors.append((composed_word_2, position_to_add))
-	
-	else:
-		mid_point = len(start_list) // 2
-		new_word_1 = (first_word[:-1] + last_word[:-1]).strip()
-		new_word_2 = (last_word[:-1] + first_word[:-1]).strip()
-		if new_word_1 in main_colors:
-			all_colors.append(new_word_1)
-		
-		elif new_word_1 in secondary_colors:
-			position_to_add = len(all_colors)
-			sec_colors.append((new_word_1, position_to_add))
-		
-		elif new_word_2 in main_colors:
-			all_colors.append(new_word_2)
-		
-		elif new_word_2 in secondary_colors:
-			position_to_add = len(all_colors)
-			sec_colors.append((new_word_2, position_to_add))
-		
-		else:
-			start_list.insert(mid_point, new_word_1)
-
-if start_list:
-	if start_list[0] in main_colors:
-		all_colors.append(start_list[0])
-
-for color, position in sec_colors:
-	possible_main_colors = secondary_colors[color]
-	for pos_main_clr in possible_main_colors:
-		if pos_main_clr not in all_colors:
+	for color in (first_str + last_str, last_str + first_str):
+		if color in main_colors or color in secondary_colors:
+			collected_colors.append(color)
 			break
 	
 	else:
-		all_colors.insert(position, color)
+		first_sub = first_str[:-1] if first_str else ""
+		last_sub = last_str[:-1] if last_str else ""
+		
+		mid_idx = len(colors_queue) // 2
+		
+		if first_sub:
+			colors_queue.insert(mid_idx, first_sub)
+		
+		if last_sub:
+			colors_queue.insert(mid_idx, last_sub)
 
-print(all_colors)
+final_colors = []
+for color in collected_colors:
+	if color in secondary_colors:
+		req_colors = secondary_colors[color]
+		if all(main_clr in collected_colors for main_clr in req_colors):
+			final_colors.append(color)
+	
+	else:
+		final_colors.append(color)
+
+print(final_colors)
