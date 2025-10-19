@@ -1,0 +1,13 @@
+def draw(num: int):
+	if num <= 0:
+		return
+	
+	print("*" * num)
+	
+	draw(num - 1)
+	
+	print("#" * num)
+
+
+n = int(input())
+draw(n)
